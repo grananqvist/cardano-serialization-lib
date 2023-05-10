@@ -222,7 +222,7 @@ impl PlutusWitnesses {
         self.0.push(elem.clone());
     }
 
-    pub(crate) fn collect(&self) -> (PlutusScripts, Option<PlutusList>, Redeemers) {
+    pub(crate) fn collect(&self, definite_encoding: bool) -> (PlutusScripts, Option<PlutusList>, Redeemers) {
         let mut used_scripts = BTreeSet::new();
         let mut used_datums = BTreeSet::new();
         let mut used_redeemers = BTreeSet::new();
@@ -240,8 +240,15 @@ impl PlutusWitnesses {
                     match d {
                         Some(ref mut d) => d.add(datum),
                         None => d =  {
-                            let mut initial_list = PlutusList::new();
-                            initial_list.add(datum);
+                            let initial_list = {
+                                if definite_encoding {
+                                    PlutusList::from_with_definite_encoding(vec![datum.clone()])
+                                } else {
+                                    let mut initial_list = PlutusList::new();
+                                    initial_list.add(datum);
+                                    initial_list
+                                }
+                            };
                             Some(initial_list)
                         }
                     }

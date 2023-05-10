@@ -130,7 +130,7 @@ fn fake_full_tx(
     };
     let (plutus_scripts, plutus_data, redeemers) = {
         if let Some(s) = tx_builder.get_combined_plutus_scripts() {
-            let (s, d, r) = s.collect();
+            let (s, d, r) = s.collect(false);
             (Some(s), d, Some(r))
         } else {
             (None, None, None)
@@ -1341,11 +1341,12 @@ impl TransactionBuilder {
         let fee = match &self.fee {
             None => self.min_fee(),
             // generating the change output involves changing the fee
-            Some(_x) => {
+            Some(fee) => Ok(fee.clone()),
+            /*Some(_x) => {
                 return Err(JsError::from_str(
                     "Cannot calculate change if fee was explicitly specified",
                 ))
-            }
+            }*/
         }?;
 
         // note: can't add plutus data or data hash and script to change
@@ -1695,7 +1696,7 @@ impl TransactionBuilder {
     /// NOTE: this function will check which language versions are used in the present scripts
     /// and will assert and require for a corresponding cost-model to be present in the passed map.
     /// Only the cost-models for the present language versions will be used in the hash calculation.
-    pub fn calc_script_data_hash(&mut self, cost_models: &Costmdls) -> Result<(), JsError> {
+    pub fn calc_script_data_hash(&mut self, cost_models: &Costmdls, definite_encoding: bool) -> Result<(), JsError> {
         let mut used_langs = BTreeSet::new();
         let mut retained_cost_models = Costmdls::new();
         let mut plutus_witnesses = PlutusWitnesses::new();
@@ -1713,7 +1714,7 @@ impl TransactionBuilder {
         }
 
         if plutus_witnesses.len() > 0 {
-            let (_scripts, datums, redeemers) = plutus_witnesses.collect();
+            let (_scripts, datums, redeemers) = plutus_witnesses.collect(definite_encoding);
             for lang in used_langs {
                 match cost_models.get(&lang) {
                     Some(cost) => {
@@ -1869,7 +1870,7 @@ impl TransactionBuilder {
             wit.set_native_scripts(&scripts);
         }
         if let Some(pw) = self.get_combined_plutus_scripts() {
-            let (scripts, datums, redeemers) = pw.collect();
+            let (scripts, datums, redeemers) = pw.collect(false);
             wit.set_plutus_scripts(&scripts);
             if let Some(datums) = &datums {
                 wit.set_plutus_data(datums);

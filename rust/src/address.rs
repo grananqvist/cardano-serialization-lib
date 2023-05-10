@@ -1,3 +1,5 @@
+use std::hash::{Hash, Hasher};
+
 use super::*;
 use crate::legacy_address::ExtendedAddr;
 use bech32::ToBase32;
@@ -341,6 +343,13 @@ pub struct Address(AddrType);
 from_bytes!(Address, data, { Self::from_bytes_impl(data.as_ref()) });
 
 to_from_json!(Address);
+
+/// Make Addresses hashable
+impl Hash for Address {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.to_bytes().hash(state)
+    }
+}
 
 impl serde::Serialize for Address {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>

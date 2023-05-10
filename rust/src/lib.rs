@@ -3294,6 +3294,10 @@ impl_to_from!(Assets);
 
 #[wasm_bindgen]
 impl Assets {
+    pub fn inner(&self) -> &std::collections::BTreeMap<AssetName, BigNum> {
+        &self.0
+    }
+    
     pub fn new() -> Self {
         Self(std::collections::BTreeMap::new())
     }
@@ -3328,6 +3332,10 @@ impl_to_from!(MultiAsset);
 
 #[wasm_bindgen]
 impl MultiAsset {
+    pub fn inner(&self) -> &std::collections::BTreeMap<PolicyID, Assets> {
+        &self.0
+    }
+
     pub fn new() -> Self {
         Self(std::collections::BTreeMap::new())
     }
