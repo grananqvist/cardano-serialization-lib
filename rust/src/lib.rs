@@ -17,6 +17,7 @@ extern crate hex;
 
 use std::convert::TryInto;
 use std::io::{BufRead, Seek, Write};
+use std::string::FromUtf8Error;
 
 #[cfg(not(all(target_arch = "wasm32", not(target_os = "emscripten"))))]
 use noop_proc_macro::wasm_bindgen;
@@ -112,10 +113,10 @@ type SlotBigNum = BigNum;
 #[wasm_bindgen]
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, JsonSchema)]
 pub struct Transaction {
-    body: TransactionBody,
-    witness_set: TransactionWitnessSet,
-    is_valid: bool,
-    auxiliary_data: Option<AuxiliaryData>,
+    pub body: TransactionBody,
+    pub witness_set: TransactionWitnessSet,
+    pub is_valid: bool,
+    pub auxiliary_data: Option<AuxiliaryData>,
 }
 
 impl_to_from!(Transaction);
@@ -216,6 +217,11 @@ impl TransactionOutputs {
         self.0[index].clone()
     }
 
+    pub fn get_ref(&self, index: usize) -> &TransactionOutput {
+        &self.0[index]
+    }
+
+
     pub fn add(&mut self, elem: &TransactionOutput) {
         self.0.push(elem.clone());
     }
@@ -313,23 +319,23 @@ impl From<&Ed25519KeyHashes> for RequiredSignersSet {
 #[wasm_bindgen]
 #[derive(Clone, Eq, PartialEq, Debug, serde::Serialize, serde::Deserialize, JsonSchema)]
 pub struct TransactionBody {
-    inputs: TransactionInputs,
-    outputs: TransactionOutputs,
-    fee: Coin,
-    ttl: Option<SlotBigNum>,
-    certs: Option<Certificates>,
-    withdrawals: Option<Withdrawals>,
-    update: Option<Update>,
-    auxiliary_data_hash: Option<AuxiliaryDataHash>,
-    validity_start_interval: Option<SlotBigNum>,
-    mint: Option<Mint>,
-    script_data_hash: Option<ScriptDataHash>,
-    collateral: Option<TransactionInputs>,
-    required_signers: Option<RequiredSigners>,
-    network_id: Option<NetworkId>,
-    collateral_return: Option<TransactionOutput>,
-    total_collateral: Option<Coin>,
-    reference_inputs: Option<TransactionInputs>,
+    pub inputs: TransactionInputs,
+    pub outputs: TransactionOutputs,
+    pub fee: Coin,
+    pub ttl: Option<SlotBigNum>,
+    pub certs: Option<Certificates>,
+    pub withdrawals: Option<Withdrawals>,
+    pub update: Option<Update>,
+    pub auxiliary_data_hash: Option<AuxiliaryDataHash>,
+    pub validity_start_interval: Option<SlotBigNum>,
+    pub mint: Option<Mint>,
+    pub script_data_hash: Option<ScriptDataHash>,
+    pub collateral: Option<TransactionInputs>,
+    pub required_signers: Option<RequiredSigners>,
+    pub network_id: Option<NetworkId>,
+    pub collateral_return: Option<TransactionOutput>,
+    pub total_collateral: Option<Coin>,
+    pub reference_inputs: Option<TransactionInputs>,
 }
 
 impl_to_from!(TransactionBody);
@@ -595,15 +601,21 @@ impl TransactionInput {
     }
 }
 
+impl Display for TransactionInput {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}#{}", self.transaction_id, self.index)
+    }
+}
+
 #[wasm_bindgen]
 #[derive(
     Debug, Clone, Eq, Ord, PartialEq, PartialOrd, serde::Serialize, serde::Deserialize, JsonSchema,
 )]
 pub struct TransactionOutput {
-    address: Address,
-    amount: Value,
-    plutus_data: Option<DataOption>,
-    script_ref: Option<ScriptRef>,
+    pub address: Address,
+    pub amount: Value,
+    pub plutus_data: Option<DataOption>,
+    pub script_ref: Option<ScriptRef>,
 }
 
 impl_to_from!(TransactionOutput);
@@ -3153,7 +3165,7 @@ impl HeaderBody {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub struct AssetName(Vec<u8>);
+pub struct AssetName(pub Vec<u8>);
 
 impl Display for AssetName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -3203,6 +3215,10 @@ impl AssetName {
 
     pub fn name(&self) -> Vec<u8> {
         self.0.clone()
+    }
+
+    pub fn ticker(&self) -> Result<String, FromUtf8Error> {
+        String::from_utf8(self.0.clone())
     }
 }
 

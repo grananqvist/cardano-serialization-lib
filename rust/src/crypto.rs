@@ -932,7 +932,7 @@ macro_rules! impl_hash_type {
     ($name:ident, $byte_count:expr) => {
         #[wasm_bindgen]
         #[derive(Debug, Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
-        pub struct $name(pub(crate) [u8; $byte_count]);
+        pub struct $name(pub [u8; $byte_count]);
 
         // hash types are the only types in this library to not expect the entire CBOR structure.
         // There is no CBOR binary tag here just the raw hash bytes.

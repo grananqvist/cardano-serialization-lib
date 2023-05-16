@@ -3,17 +3,18 @@ use crate::*;
 use std::io::{Seek, SeekFrom};
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub struct FixedTransaction {
-    body: TransactionBody,
-    body_bytes: Vec<u8>,
+    pub body: TransactionBody,
+    pub body_bytes: Vec<u8>,
 
-    witness_set: TransactionWitnessSet,
-    witness_bytes: Vec<u8>,
+    pub witness_set: TransactionWitnessSet,
+    pub witness_bytes: Vec<u8>,
 
-    is_valid: bool,
+    pub is_valid: bool,
 
-    auxiliary_data: Option<AuxiliaryData>,
-    auxiliary_bytes: Option<Vec<u8>>,
+    pub auxiliary_data: Option<AuxiliaryData>,
+    pub auxiliary_bytes: Option<Vec<u8>>,
 }
 
 to_from_bytes!(FixedTransaction);
@@ -112,6 +113,17 @@ impl FixedTransaction {
 
     pub fn raw_auxiliary_data(&self) -> Option<Vec<u8>> {
         self.auxiliary_bytes.clone()
+    }
+}
+
+impl fmt::Debug for FixedTransaction {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("FixedTransaction")
+            .field("body", &self.body)
+            .field("witness_set", &self.witness_set)
+            .field("is_valid", &self.is_valid)
+            .field("auxiliary_data", &self.auxiliary_data)
+            .finish()
     }
 }
 
