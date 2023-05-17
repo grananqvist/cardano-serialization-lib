@@ -79,6 +79,42 @@ pub(crate) fn fake_raw_key_public() -> PublicKey {
     .unwrap()
 }
 
+fn _add_datums_from_outputs(datums: Option<PlutusList>, outputs: &TransactionOutputs) -> Option<PlutusList> {
+    let mut datums = {
+        match datums {
+            None => PlutusList::new(),
+            Some(d) => d,
+        }
+    };
+    for i in 0..outputs.len() {
+        if let Some(DataOption::Data(datum)) = &outputs.get_ref(i).plutus_data {
+            datums.add(datum);
+        }
+    }
+    if datums.len() == 0 {
+        None
+    } else {
+        Some(datums)
+    }
+}
+
+fn add_datums(initial_datums: Option<PlutusList>, more_datums: &PlutusList) -> Option<PlutusList> {
+    let mut initial_datums = {
+        match initial_datums {
+            None => PlutusList::new(),
+            Some(d) => d,
+        }
+    };
+    for datum in more_datums.elems.iter() {
+        initial_datums.add(datum);
+    }
+    if initial_datums.len() == 0 {
+        None
+    } else {
+        Some(initial_datums)
+    }
+}
+
 fn count_needed_vkeys(tx_builder: &TransactionBuilder) -> usize {
     let mut input_hashes: RequiredSignersSet = RequiredSignersSet::from(&tx_builder.inputs);
     input_hashes.extend(RequiredSignersSet::from(&tx_builder.collateral));
@@ -136,6 +172,7 @@ fn fake_full_tx(
             (None, None, None)
         }
     };
+    let plutus_data = add_datums(plutus_data, &tx_builder.datums);
     let witness_set = TransactionWitnessSet {
         vkeys,
         native_scripts: tx_builder.get_combined_native_scripts(),
@@ -362,6 +399,7 @@ pub struct TransactionBuilder {
     collateral_return: Option<TransactionOutput>,
     total_collateral: Option<Coin>,
     reference_inputs: HashSet<TransactionInput>,
+    pub datums: PlutusList,
 }
 
 #[wasm_bindgen]
@@ -1244,6 +1282,7 @@ impl TransactionBuilder {
             collateral_return: None,
             total_collateral: None,
             reference_inputs: HashSet::new(),
+            datums: PlutusList::new(),
         }
     }
 
@@ -1871,6 +1910,7 @@ impl TransactionBuilder {
         }
         if let Some(pw) = self.get_combined_plutus_scripts() {
             let (scripts, datums, redeemers) = pw.collect(false);
+            let datums = add_datums(datums, &self.datums);
             wit.set_plutus_scripts(&scripts);
             if let Some(datums) = &datums {
                 wit.set_plutus_data(datums);
