@@ -773,7 +773,7 @@ pub struct PlutusList {
     // We should always preserve the original datums when deserialized as this is NOT canonicized
     // before computing datum hashes. This field will default to cardano-cli behavior if None
     // and will re-use the provided one if deserialized, unless the list is modified.
-    definite_encoding: Option<bool>,
+    pub definite_encoding: Option<bool>,
 }
 
 impl std::cmp::PartialEq<Self> for PlutusList {
