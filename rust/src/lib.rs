@@ -3330,6 +3330,10 @@ impl Assets {
         self.0.get(key).map(|v| v.clone())
     }
 
+    pub fn get_ref(&self, key: &AssetName) -> Option<&BigNum> {
+        self.0.get(key)
+    }
+
     pub fn keys(&self) -> AssetNames {
         AssetNames(
             self.0
@@ -3369,6 +3373,10 @@ impl MultiAsset {
     /// all assets under {policy_id}, if any exist, or else None (undefined in JS)
     pub fn get(&self, policy_id: &PolicyID) -> Option<Assets> {
         self.0.get(policy_id).map(|v| v.clone())
+    }
+
+    pub fn get_ref(&self, policy_id: &PolicyID) -> Option<&Assets> {
+        self.0.get(policy_id)
     }
 
     /// sets the asset {asset_name} to {value} under policy {policy_id}
