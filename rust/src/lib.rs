@@ -1804,7 +1804,7 @@ pub struct TransactionWitnessSet {
     native_scripts: Option<NativeScripts>,
     bootstraps: Option<BootstrapWitnesses>,
     plutus_scripts: Option<PlutusScripts>,
-    plutus_data: Option<PlutusList>,
+    pub plutus_data: Option<PlutusList>,
     redeemers: Option<Redeemers>,
 }
 
