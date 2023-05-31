@@ -166,7 +166,7 @@ type CertificateIndex = u32;
 #[derive(
     Clone, Debug, Eq, Ord, PartialEq, PartialOrd, serde::Serialize, serde::Deserialize, JsonSchema,
 )]
-pub struct TransactionInputs(Vec<TransactionInput>);
+pub struct TransactionInputs(pub Vec<TransactionInput>);
 
 impl_to_from!(TransactionInputs);
 
