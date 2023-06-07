@@ -577,8 +577,8 @@ impl TransactionBody {
     Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Hash, serde::Serialize, serde::Deserialize, JsonSchema,
 )]
 pub struct TransactionInput {
-    transaction_id: TransactionHash,
-    index: TransactionIndex,
+    pub transaction_id: TransactionHash,
+    pub index: TransactionIndex,
 }
 
 impl_to_from!(TransactionInput);
