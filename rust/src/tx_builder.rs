@@ -384,7 +384,7 @@ impl TransactionBuilderConfigBuilder {
 #[derive(Clone, Debug)]
 pub struct TransactionBuilder {
     config: TransactionBuilderConfig,
-    inputs: TxInputsBuilder,
+    pub inputs: TxInputsBuilder,
     collateral: TxInputsBuilder,
     outputs: TransactionOutputs,
     fee: Option<Coin>,

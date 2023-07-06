@@ -155,7 +155,7 @@ impl<'a> IntoIterator for &'a TransactionUnspentOutputs {
 // Can be converted to/from plain rust
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct BigNum(u64);
+pub struct BigNum(pub u64);
 
 impl_to_from!(BigNum);
 

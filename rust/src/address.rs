@@ -122,7 +122,7 @@ pub enum StakeCredKind {
     serde::Deserialize,
     JsonSchema,
 )]
-pub struct StakeCredential(StakeCredType);
+pub struct StakeCredential(pub StakeCredType);
 
 #[wasm_bindgen]
 impl StakeCredential {
@@ -222,7 +222,7 @@ impl Deserialize for StakeCredential {
 }
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-enum AddrType {
+pub enum AddrType {
     Base(BaseAddress),
     Ptr(PointerAddress),
     Enterprise(EnterpriseAddress),
@@ -232,7 +232,7 @@ enum AddrType {
 
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct ByronAddress(pub(crate) ExtendedAddr);
+pub struct ByronAddress(pub ExtendedAddr);
 #[wasm_bindgen]
 impl ByronAddress {
     pub fn to_base58(&self) -> String {
@@ -338,7 +338,7 @@ impl ByronAddress {
 
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Address(AddrType);
+pub struct Address(pub AddrType);
 
 from_bytes!(Address, data, { Self::from_bytes_impl(data.as_ref()) });
 
@@ -644,9 +644,9 @@ impl Deserialize for Address {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct BaseAddress {
-    network: u8,
-    payment: StakeCredential,
-    stake: StakeCredential,
+    pub network: u8,
+    pub payment: StakeCredential,
+    pub stake: StakeCredential,
 }
 
 #[wasm_bindgen]
@@ -683,7 +683,7 @@ impl BaseAddress {
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct EnterpriseAddress {
     network: u8,
-    payment: StakeCredential,
+    pub payment: StakeCredential,
 }
 
 #[wasm_bindgen]
@@ -715,7 +715,7 @@ impl EnterpriseAddress {
 #[derive(Debug, Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct RewardAddress {
     network: u8,
-    payment: StakeCredential,
+    pub payment: StakeCredential,
 }
 
 #[wasm_bindgen]
@@ -813,9 +813,9 @@ impl Deserialize for RewardAddress {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Pointer {
-    slot: BigNum,
-    tx_index: BigNum,
-    cert_index: BigNum,
+    pub slot: BigNum,
+    pub tx_index: BigNum,
+    pub cert_index: BigNum,
 }
 
 #[wasm_bindgen]
@@ -871,9 +871,9 @@ impl Pointer {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PointerAddress {
-    network: u8,
-    payment: StakeCredential,
-    stake: Pointer,
+    pub network: u8,
+    pub payment: StakeCredential,
+    pub stake: Pointer,
 }
 
 #[wasm_bindgen]
