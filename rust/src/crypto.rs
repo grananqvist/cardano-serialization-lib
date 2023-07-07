@@ -931,15 +931,28 @@ impl_signature!(Ed25519Signature, Vec<u8>, crypto::Ed25519);
 macro_rules! impl_hash_type {
     ($name:ident, $byte_count:expr) => {
         #[wasm_bindgen]
-        #[derive(Debug, Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
-        pub struct $name(pub [u8; $byte_count]);
+        #[derive(Debug, Clone, Ord, PartialOrd)]
+        pub struct $name(pub [u8; $byte_count], pub Option<String>);
+
+        // Manual hash and equal implementation to ignore 2nd element.
+        impl PartialEq for $name {
+            fn eq(&self, other: &Self) -> bool {
+                self.0 == other.0
+            }
+        }
+        impl Eq for $name {}
+        impl std::hash::Hash for $name {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.0.hash(state);
+            }
+        }
 
         // hash types are the only types in this library to not expect the entire CBOR structure.
         // There is no CBOR binary tag here just the raw hash bytes.
         from_bytes!($name, bytes, {
             use std::convert::TryInto;
             match bytes.len() {
-                $byte_count => Ok($name(bytes[..$byte_count].try_into().unwrap())),
+                $byte_count => Ok($name(bytes[..$byte_count].try_into().unwrap(), None)),
                 other_len => {
                     let cbor_error = cbor_event::Error::WrongLen(
                         $byte_count,
@@ -960,6 +973,10 @@ macro_rules! impl_hash_type {
             // There is no CBOR binary tag here just the raw hash bytes.
             pub fn to_bytes(&self) -> Vec<u8> {
                 self.0.to_vec()
+            }
+
+            pub fn hex_cache(&self) -> &str {
+                &self.1.as_ref().unwrap()
             }
 
             pub fn to_bech32(&self, prefix: &str) -> Result<String, JsError> {
@@ -983,6 +1000,16 @@ macro_rules! impl_hash_type {
                     .map_err(|e| JsError::from_str(&format!("hex decode failed: {}", e)))?;
                 Self::from_bytes(bytes).map_err(|e| JsError::from_str(&format!("{:?}", e)))
             }
+
+            pub fn from_hex_cached(hex: String) -> Result<$name, JsError> {
+                let bytes = hex::decode(&hex)
+                    .map_err(|e| JsError::from_str(&format!("hex decode failed: {}", e)))?;
+                let o = Self::from_bytes(bytes).map_err(|e| JsError::from_str(&format!("{:?}", e)));
+                o.map(|mut x| {
+                    x.1 = Some(hex); 
+                    x
+                })
+            }
         }
 
         // associated consts are not supported in wasm_bindgen
@@ -993,7 +1020,7 @@ macro_rules! impl_hash_type {
         // can't expose [T; N] to wasm for new() but it's useful internally so we implement From trait
         impl From<[u8; $byte_count]> for $name {
             fn from(bytes: [u8; $byte_count]) -> Self {
-                Self(bytes)
+                Self(bytes, None)
             }
         }
 
@@ -1021,7 +1048,7 @@ macro_rules! impl_hash_type {
                         ))
                         .into());
                     }
-                    Ok($name(bytes[..$byte_count].try_into().unwrap()))
+                    Ok($name(bytes[..$byte_count].try_into().unwrap(), None))
                 })()
                 .map_err(|e| e.annotate(stringify!($name)))
             }
