@@ -3346,7 +3346,7 @@ impl Assets {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, Ord, PartialEq, serde::Serialize, serde::Deserialize, JsonSchema)]
-pub struct MultiAsset(pub(crate) std::collections::BTreeMap<PolicyID, Assets>);
+pub struct MultiAsset(pub std::collections::BTreeMap<PolicyID, Assets>);
 
 impl_to_from!(MultiAsset);
 

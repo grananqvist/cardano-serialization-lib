@@ -615,7 +615,7 @@ pub struct PlutusData {
     pub datum: PlutusDataEnum,
     // We should always preserve the original datums when deserialized as this is NOT canonicized
     // before computing datum hashes. So this field stores the original bytes to re-use.
-    original_bytes: Option<Vec<u8>>,
+    pub original_bytes: Option<Vec<u8>>,
 }
 
 impl std::cmp::PartialEq<Self> for PlutusData {
