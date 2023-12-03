@@ -3304,7 +3304,7 @@ pub type PolicyIDs = ScriptHashes;
     serde::Deserialize,
     JsonSchema,
 )]
-pub struct Assets(pub(crate) std::collections::BTreeMap<AssetName, BigNum>);
+pub struct Assets(pub std::collections::BTreeMap<AssetName, BigNum>);
 
 impl_to_from!(Assets);
 
