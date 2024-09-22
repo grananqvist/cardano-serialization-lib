@@ -7,7 +7,7 @@ impl Deserialize for FixedTransactionBody {
             let body = TransactionBody::deserialize(raw)?;
             Ok(body)
         }).map_err(|e| e.annotate("TransactionBody"))?;
-        let hash = TransactionHash(blake2b256(orig_bytes.as_ref()));
+        let hash = TransactionHash(blake2b256(orig_bytes.as_ref()), None);
         Ok(FixedTransactionBody {
             body,
             tx_hash: hash,

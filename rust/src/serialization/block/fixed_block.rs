@@ -12,7 +12,7 @@ impl Deserialize for FixedBlock {
         ), orig_bytes) = deserilized_with_orig_bytes(raw, |raw| -> Result<_, DeserializeError> {
             deserialize_block(raw)
         }).map_err(|e| e.annotate("Block"))?;
-        let block_hash = BlockHash(blake2b256(orig_bytes.as_ref()));
+        let block_hash = BlockHash(blake2b256(orig_bytes.as_ref()), None);
         Ok(FixedBlock {
             header,
             transaction_bodies,

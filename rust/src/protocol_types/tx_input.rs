@@ -15,8 +15,8 @@ use crate::*;
     JsonSchema,
 )]
 pub struct TransactionInput {
-    pub(crate) transaction_id: TransactionHash,
-    pub(crate) index: TransactionIndex,
+    pub transaction_id: TransactionHash,
+    pub index: TransactionIndex,
 }
 
 impl_to_from!(TransactionInput);

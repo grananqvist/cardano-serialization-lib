@@ -14,8 +14,8 @@ use schemars::JsonSchema;
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Hash)]
 pub struct ConstrPlutusData {
-    pub(crate) alternative: BigNum,
-    pub(crate) data: PlutusList,
+    pub alternative: BigNum,
+    pub data: PlutusList,
 }
 
 to_from_bytes!(ConstrPlutusData);
@@ -177,10 +177,10 @@ pub enum PlutusDataEnum {
 #[wasm_bindgen]
 #[derive(Clone, Debug, Ord, PartialOrd)]
 pub struct PlutusData {
-    pub(crate) datum: PlutusDataEnum,
+    pub datum: PlutusDataEnum,
     // We should always preserve the original datums when deserialized as this is NOT canonicized
     // before computing datum hashes. So this field stores the original bytes to re-use.
-    pub(crate) original_bytes: Option<Vec<u8>>,
+    pub original_bytes: Option<Vec<u8>>,
 }
 
 impl std::cmp::PartialEq<Self> for PlutusData {
@@ -439,11 +439,11 @@ impl<'de> serde::de::Deserialize<'de> for PlutusData {
 #[wasm_bindgen]
 #[derive(Clone, Debug, Ord, PartialOrd, Hash, serde::Serialize, serde::Deserialize, JsonSchema)]
 pub struct PlutusList {
-    pub(crate) elems: Vec<PlutusData>,
+    pub elems: Vec<PlutusData>,
     // We should always preserve the original datums when deserialized as this is NOT canonicized
     // before computing datum hashes. This field will default to cardano-cli behavior if None
     // and will re-use the provided one if deserialized, unless the list is modified.
-    pub(crate) definite_encoding: Option<bool>,
+    pub definite_encoding: Option<bool>,
 }
 
 impl NoneOrEmpty for PlutusList {
@@ -477,6 +477,13 @@ impl PlutusList {
         Self {
             elems: Vec::new(),
             definite_encoding: None,
+        }
+    }
+
+    pub fn from_with_definite_encoding(elems: Vec<PlutusData>) -> Self {
+        Self {
+            elems,
+            definite_encoding: Some(true),
         }
     }
 

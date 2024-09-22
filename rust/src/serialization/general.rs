@@ -305,7 +305,7 @@ impl DeserializeEmbeddedGroup for TransactionOutput {
                 let initial_position = raw.as_mut_ref().seek(SeekFrom::Current(0)).unwrap();
                 let bytes = raw.bytes().unwrap();
                 if bytes.len() == DataHash::BYTE_COUNT {
-                    Some(DataOption::DataHash(DataHash(bytes[..DataHash::BYTE_COUNT].try_into().unwrap())))
+                    Some(DataOption::DataHash(DataHash::from_bytes(bytes[..DataHash::BYTE_COUNT].try_into().unwrap()).unwrap()))
                 } else {
                     // This is an address of the next output in sequence, which luckily is > 32 bytes so there's no confusion
                     // Go to previous place in array then carry on

@@ -38,7 +38,7 @@ serde::Serialize,
 serde::Deserialize,
 JsonSchema,
 )]
-pub struct Credential(pub(crate) CredType);
+pub struct Credential(pub CredType);
 
 #[wasm_bindgen]
 impl Credential {

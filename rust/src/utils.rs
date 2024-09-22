@@ -156,8 +156,8 @@ impl<'a> IntoIterator for &'a TransactionUnspentOutputs {
     JsonSchema,
 )]
 pub struct Value {
-    pub(crate) coin: Coin,
-    pub(crate) multiasset: Option<MultiAsset>,
+    pub coin: Coin,
+    pub multiasset: Option<MultiAsset>,
 }
 
 impl_to_from!(Value);

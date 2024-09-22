@@ -49,14 +49,14 @@ mod crypto;
 pub(crate) use crypto::*;
 mod emip3;
 pub use emip3::*;
-mod error;
+pub mod error;
 pub use error::*;
 mod fees;
 pub use fees::*;
 pub mod impl_mockchain;
 pub mod legacy_address;
 pub mod traits;
-mod protocol_types;
+pub mod protocol_types;
 pub use protocol_types::*;
 pub mod typed_bytes;
 #[macro_use]
@@ -74,6 +74,7 @@ use std::collections::BTreeSet;
 use std::fmt;
 use std::fmt::Display;
 use hashlink::LinkedHashMap;
+use std::string::FromUtf8Error;
 
 type DeltaCoin = Int;
 
@@ -124,10 +125,10 @@ type SlotBigNum = BigNum;
 #[wasm_bindgen]
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, JsonSchema)]
 pub struct Transaction {
-    body: TransactionBody,
-    witness_set: TransactionWitnessSet,
-    is_valid: bool,
-    auxiliary_data: Option<AuxiliaryData>,
+    pub body: TransactionBody,
+    pub witness_set: TransactionWitnessSet,
+    pub is_valid: bool,
+    pub auxiliary_data: Option<AuxiliaryData>,
 }
 
 impl_to_from!(Transaction);
@@ -194,6 +195,10 @@ impl TransactionOutputs {
         self.0[index].clone()
     }
 
+    pub fn get_ref(&self, index: usize) -> &TransactionOutput {
+        &self.0[index]
+    }
+
     pub fn add(&mut self, elem: &TransactionOutput) {
         self.0.push(elem.clone());
     }
@@ -230,10 +235,10 @@ impl DataCost {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialOrd, serde::Serialize, serde::Deserialize, JsonSchema)]
 pub struct TransactionOutput {
-    address: Address,
-    amount: Value,
-    plutus_data: Option<DataOption>,
-    script_ref: Option<ScriptRef>,
+    pub address: Address,
+    pub amount: Value,
+    pub plutus_data: Option<DataOption>,
+    pub script_ref: Option<ScriptRef>,
 
     #[serde(skip)]
     serialization_format: Option<CborContainerType>,
@@ -1191,7 +1196,7 @@ impl JsonSchema for AuxiliaryDataSet {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub struct AssetName(Vec<u8>);
+pub struct AssetName(pub Vec<u8>);
 
 impl Display for AssetName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -1241,6 +1246,10 @@ impl AssetName {
 
     pub fn name(&self) -> Vec<u8> {
         self.0.clone()
+    }
+
+    pub fn ticker(&self) -> Result<String, FromUtf8Error> {
+        String::from_utf8(self.0.clone())
     }
 }
 
@@ -1326,12 +1335,16 @@ pub type PolicyIDs = ScriptHashes;
     serde::Deserialize,
     JsonSchema,
 )]
-pub struct Assets(pub(crate) std::collections::BTreeMap<AssetName, BigNum>);
+pub struct Assets(pub std::collections::BTreeMap<AssetName, BigNum>);
 
 impl_to_from!(Assets);
 
 #[wasm_bindgen]
 impl Assets {
+    pub fn inner(&self) -> &std::collections::BTreeMap<AssetName, BigNum> {
+        &self.0
+    }
+
     pub fn new() -> Self {
         Self(std::collections::BTreeMap::new())
     }
@@ -1348,6 +1361,10 @@ impl Assets {
         self.0.get(key).map(|v| v.clone())
     }
 
+    pub fn get_ref(&self, key: &AssetName) -> Option<&BigNum> {
+        self.0.get(key)
+    }
+
     pub fn keys(&self) -> AssetNames {
         AssetNames(
             self.0
@@ -1360,12 +1377,16 @@ impl Assets {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, Ord, PartialEq, serde::Serialize, serde::Deserialize, JsonSchema)]
-pub struct MultiAsset(pub(crate) std::collections::BTreeMap<PolicyID, Assets>);
+pub struct MultiAsset(pub std::collections::BTreeMap<PolicyID, Assets>);
 
 impl_to_from!(MultiAsset);
 
 #[wasm_bindgen]
 impl MultiAsset {
+    pub fn inner(&self) -> &std::collections::BTreeMap<PolicyID, Assets> {
+        &self.0
+    }
+
     pub fn new() -> Self {
         Self(std::collections::BTreeMap::new())
     }
@@ -1383,6 +1404,10 @@ impl MultiAsset {
     /// all assets under {policy_id}, if any exist, or else None (undefined in JS)
     pub fn get(&self, policy_id: &PolicyID) -> Option<Assets> {
         self.0.get(policy_id).map(|v| v.clone())
+    }
+
+    pub fn get_ref(&self, policy_id: &PolicyID) -> Option<&Assets> {
+        self.0.get(policy_id)
     }
 
     /// sets the asset {asset_name} to {value} under policy {policy_id}

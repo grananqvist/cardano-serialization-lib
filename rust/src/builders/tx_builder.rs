@@ -68,7 +68,7 @@ pub(crate) fn fake_full_tx(
     };
     let (plutus_scripts, mut plutus_data, redeemers) = {
         if let Some(s) = tx_builder.get_combined_plutus_scripts() {
-            let (s, d, r) = s.collect();
+            let (s, d, r) = s.collect(false);
             (Some(s), d, Some(r))
         } else {
             (None, None, None)
@@ -355,7 +355,7 @@ impl ChangeConfig {
 #[derive(Clone, Debug)]
 pub struct TransactionBuilder {
     pub(crate) config: TransactionBuilderConfig,
-    pub(crate) inputs: TxInputsBuilder,
+    pub inputs: TxInputsBuilder,
     pub(crate) collateral: TxInputsBuilder,
     pub(crate) outputs: TransactionOutputs,
     pub(crate) fee: Option<Coin>,
@@ -1754,12 +1754,13 @@ impl TransactionBuilder {
     ) -> Result<bool, JsError> {
         let fee = match &self.fee {
             None => self.min_fee(),
+            Some(fee) => Ok(fee.clone()),
             // generating the change output involves changing the fee
-            Some(_x) => {
+            /*Some(_x) => {
                 return Err(JsError::from_str(
                     "Cannot calculate change if fee was explicitly specified",
                 ))
-            }
+            }*/
         }?;
 
         let input_total = self.get_total_input()?;
@@ -2113,7 +2114,7 @@ impl TransactionBuilder {
     /// NOTE: this function will check which language versions are used in the present scripts
     /// and will assert and require for a corresponding cost-model to be present in the passed map.
     /// Only the cost-models for the present language versions will be used in the hash calculation.
-    pub fn calc_script_data_hash(&mut self, cost_models: &Costmdls) -> Result<(), JsError> {
+    pub fn calc_script_data_hash(&mut self, cost_models: &Costmdls, definite_encoding: bool) -> Result<(), JsError> {
         let mut used_langs = BTreeSet::new();
         let mut retained_cost_models = Costmdls::new();
         let mut plutus_witnesses = PlutusWitnesses::new();
@@ -2157,7 +2158,7 @@ impl TransactionBuilder {
                 .append(&mut voting_proposal_builder.get_plutus_witnesses().0)
         }
 
-        let (_scripts, mut datums, redeemers) = plutus_witnesses.collect();
+        let (_scripts, mut datums, redeemers) = plutus_witnesses.collect(definite_encoding);
         for lang in used_langs {
             match cost_models.get(&lang) {
                 Some(cost) => {
@@ -2390,7 +2391,7 @@ impl TransactionBuilder {
         }
         let mut all_datums = None;
         if let Some(pw) = self.get_combined_plutus_scripts() {
-            let (scripts, datums, redeemers) = pw.collect();
+            let (scripts, datums, redeemers) = pw.collect(false);
             wit.set_plutus_scripts(&scripts);
             all_datums = datums;
             wit.set_redeemers(&redeemers);

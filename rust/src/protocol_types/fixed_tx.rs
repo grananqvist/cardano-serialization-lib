@@ -4,16 +4,16 @@ use crate::*;
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FixedTransaction {
-    pub(crate) body: TransactionBody,
-    pub(crate) body_bytes: Vec<u8>,
-    pub(crate) tx_hash: TransactionHash,
+    pub body: TransactionBody,
+    pub body_bytes: Vec<u8>,
+    pub tx_hash: TransactionHash,
 
-    pub(crate) witness_set: FixedTxWitnessesSet,
+    pub witness_set: FixedTxWitnessesSet,
 
-    pub(crate) is_valid: bool,
+    pub is_valid: bool,
 
-    pub(crate) auxiliary_data: Option<AuxiliaryData>,
-    pub(crate) auxiliary_bytes: Option<Vec<u8>>,
+    pub auxiliary_data: Option<AuxiliaryData>,
+    pub auxiliary_bytes: Option<Vec<u8>>,
 }
 
 to_from_bytes!(FixedTransaction);

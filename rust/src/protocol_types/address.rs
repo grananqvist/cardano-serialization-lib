@@ -2,6 +2,7 @@ use crate::legacy_address::ExtendedAddr;
 use crate::*;
 use bech32::ToBase32;
 use ed25519_bip32::XPub;
+use std::hash::{Hash, Hasher};
 
 // returns (Number represented, bytes read) if valid encoding
 // or None if decoding prematurely finished
@@ -149,7 +150,7 @@ impl JsonSchema for MalformedAddress {
 }
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub(crate) enum AddrType {
+pub enum AddrType {
     Base(BaseAddress),
     Ptr(PointerAddress),
     Enterprise(EnterpriseAddress),
@@ -160,7 +161,7 @@ pub(crate) enum AddrType {
 
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct ByronAddress(pub(crate) ExtendedAddr);
+pub struct ByronAddress(pub ExtendedAddr);
 #[wasm_bindgen]
 impl ByronAddress {
     pub fn to_base58(&self) -> String {
@@ -263,11 +264,18 @@ impl ByronAddress {
 
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Address(pub(crate) AddrType);
+pub struct Address(pub AddrType);
 
 from_bytes!(Address, data, { Self::from_bytes_impl_safe(data.as_ref()) });
 
 to_from_json!(Address);
+
+/// Make Addresses hashable
+impl Hash for Address {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.to_bytes().hash(state)
+    }
+}
 
 impl serde::Serialize for Address {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -622,9 +630,9 @@ impl Deserialize for Address {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct BaseAddress {
-    pub(crate) network: u8,
-    pub(crate) payment: Credential,
-    pub(crate) stake: Credential,
+    pub network: u8,
+    pub payment: Credential,
+    pub stake: Credential,
 }
 
 #[wasm_bindgen]
@@ -664,8 +672,8 @@ impl BaseAddress {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct EnterpriseAddress {
-    pub(crate) network: u8,
-    pub(crate) payment: Credential,
+    pub network: u8,
+    pub payment: Credential,
 }
 
 #[wasm_bindgen]
@@ -700,8 +708,8 @@ impl EnterpriseAddress {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct RewardAddress {
-    pub(crate) network: u8,
-    pub(crate) payment: Credential,
+    pub network: u8,
+    pub payment: Credential,
 }
 
 #[wasm_bindgen]
@@ -803,9 +811,9 @@ impl Deserialize for RewardAddress {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Pointer {
-    pub(crate) slot: BigNum,
-    pub(crate) tx_index: BigNum,
-    pub(crate) cert_index: BigNum,
+    pub slot: BigNum,
+    pub tx_index: BigNum,
+    pub cert_index: BigNum,
 }
 
 #[wasm_bindgen]
@@ -861,9 +869,9 @@ impl Pointer {
 #[wasm_bindgen]
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PointerAddress {
-    pub(crate) network: u8,
-    pub(crate) payment: Credential,
-    pub(crate) stake: Pointer,
+    pub network: u8,
+    pub payment: Credential,
+    pub stake: Pointer,
 }
 
 #[wasm_bindgen]

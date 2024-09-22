@@ -7,8 +7,8 @@ use std::vec::IntoIter;
     Clone, Debug, Eq, Ord, PartialEq, PartialOrd,
 )]
 pub struct TransactionInputs {
-    pub(crate) inputs: Vec<TransactionInput>,
-    pub(crate) dedup: BTreeSet<TransactionInput>,
+    pub inputs: Vec<TransactionInput>,
+    pub dedup: BTreeSet<TransactionInput>,
 }
 
 impl_to_from!(TransactionInputs);
