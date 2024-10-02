@@ -7,7 +7,7 @@ use crate::*;
 // Can be converted to/from plain rust
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Default)]
-pub struct BigNum(pub(crate) u64);
+pub struct BigNum(pub u64);
 
 // Specifies an amount of ADA in terms of lovelace
 pub type Coin = BigNum;
@@ -120,6 +120,18 @@ impl TryFrom<BigNum> for u32 {
         } else {
             Ok(value.0 as u32)
         }
+    }
+}
+
+impl From<BigNum> for f64 {
+    fn from(value: BigNum) -> Self {
+        value.0 as f64
+    }
+}
+
+impl From<&BigNum> for f64 {
+    fn from(value: &BigNum) -> Self {
+        value.0 as f64
     }
 }
 

@@ -1,7 +1,7 @@
 use std::io::{BufRead, Seek, Write};
 use cbor_event::de::Deserializer;
 use cbor_event::se::Serializer;
-use cbor_event::Serialize;
+use cbor_event::{Serialize, Len};
 use crate::{BootstrapWitnesses, CBORReadLen, DeserializeError, DeserializeFailure, Key, Language, NativeScripts, PlutusList, PlutusScripts, Redeemers, TransactionWitnessSet, Vkeywitnesses};
 use crate::protocol_types::{CBORSpecial, CBORType, Deserialize, opt64, TransactionWitnessSetRaw};
 use crate::serialization::utils::{deserilized_with_orig_bytes, merge_option_plutus_list};
@@ -219,7 +219,8 @@ pub(super) fn serialize<'se, W: Write>(
             + opt64_non_empty(&wit_set.native_scripts)
             + opt64_non_empty(&wit_set.bootstraps)
             + opt64_non_empty(&wit_set.plutus_data)
-            + opt64_non_empty(&wit_set.redeemers)
+            //+ opt64_non_empty(&wit_set.redeemers)
+            + (wit_set.redeemers.is_some() as u64)
             + plutus_added_length,
     ))?;
     if let Some(field) = &wit_set.vkeys {
@@ -298,6 +299,10 @@ pub(super) fn serialize<'se, W: Write>(
         } else if !field.is_none_or_empty() {
             serializer.write_unsigned_integer(5)?;
             field.serialize(serializer)?;
+        } else {
+            serializer.write_unsigned_integer(5)?;
+            serializer.write_array(Len::Len(0))?;
+            //field.serialize(serializer)?;
         }
     }
     Ok(serializer)

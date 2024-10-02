@@ -370,7 +370,7 @@ pub struct TransactionBuilder {
     pub(crate) collateral_return: Option<TransactionOutput>,
     pub(crate) total_collateral: Option<Coin>,
     pub(crate) reference_inputs: HashMap<TransactionInput, usize>,
-    pub(crate) extra_datums: Option<PlutusList>,
+    pub extra_datums: Option<PlutusList>,
     pub(crate) voting_procedures: Option<VotingBuilder>,
     pub(crate) voting_proposals: Option<VotingProposalBuilder>,
     pub(crate) current_treasury_value: Option<Coin>,
@@ -2173,6 +2173,7 @@ impl TransactionBuilder {
             }
         }
 
+        /*
         if let Some(extra_datum) = &self.extra_datums {
             if datums.is_none() {
                 datums = Some(PlutusList::new());
@@ -2184,6 +2185,7 @@ impl TransactionBuilder {
                 }
             }
         }
+        */
 
         if datums.is_some() || redeemers.len() > 0 || retained_cost_models.len() > 0 {
             self.script_data_hash =

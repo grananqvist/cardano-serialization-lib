@@ -11,7 +11,7 @@ use crate::*;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FixedTxWitnessesSet {
     pub(crate) raw_parts: TransactionWitnessSetRaw,
-    pub(crate) tx_witnesses_set: TransactionWitnessSet,
+    pub tx_witnesses_set: TransactionWitnessSet,
 }
 
 #[wasm_bindgen]

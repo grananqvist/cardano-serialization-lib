@@ -10,7 +10,7 @@ pub(crate) struct TransactionWitnessSetRaw {
     pub(crate) plutus_scripts_v2: Option<Vec<u8>>,
     pub(crate) plutus_scripts_v3: Option<Vec<u8>>,
     pub plutus_data: Option<Vec<u8>>,
-    pub(crate) redeemers: Option<Vec<u8>>,
+    pub redeemers: Option<Vec<u8>>,
 }
 
 impl TransactionWitnessSetRaw {
@@ -34,9 +34,9 @@ pub struct TransactionWitnessSet {
     pub(crate) vkeys: Option<Vkeywitnesses>,
     pub(crate) native_scripts: Option<NativeScripts>,
     pub(crate) bootstraps: Option<BootstrapWitnesses>,
-    pub(crate) plutus_scripts: Option<PlutusScripts>,
+    pub plutus_scripts: Option<PlutusScripts>,
     pub plutus_data: Option<PlutusList>,
-    pub(crate) redeemers: Option<Redeemers>,
+    pub redeemers: Option<Redeemers>,
 }
 
 impl_to_from!(TransactionWitnessSet);
