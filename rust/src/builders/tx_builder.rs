@@ -357,7 +357,7 @@ pub struct TransactionBuilder {
     pub(crate) config: TransactionBuilderConfig,
     pub inputs: TxInputsBuilder,
     pub(crate) collateral: TxInputsBuilder,
-    pub(crate) outputs: TransactionOutputs,
+    pub outputs: TransactionOutputs,
     pub(crate) fee: Option<Coin>,
     pub(crate) ttl: Option<SlotBigNum>, // absolute slot number
     pub(crate) certs: Option<CertificatesBuilder>,

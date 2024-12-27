@@ -3,9 +3,9 @@ use hashlink::LinkedHashMap;
 use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Clone, Debug)]
-pub(crate) struct TxBuilderInput {
-    pub(crate) input: TransactionInput,
-    pub(crate) amount: Value, // we need to keep track of the amount in the inputs for input selection
+pub struct TxBuilderInput {
+    pub input: TransactionInput,
+    pub amount: Value, // we need to keep track of the amount in the inputs for input selection
 }
 
 // We need to know how many of each type of witness will be in the transaction so we can calculate the tx fee
@@ -276,7 +276,7 @@ impl TxInputsBuilder {
         })
     }
 
-    pub(crate) fn iter(&self) -> impl std::iter::Iterator<Item = &TxBuilderInput> + '_ {
+    pub fn iter(&self) -> impl std::iter::Iterator<Item = &TxBuilderInput> + '_ {
         self.inputs.values().map(|(i, _)| i)
     }
 
