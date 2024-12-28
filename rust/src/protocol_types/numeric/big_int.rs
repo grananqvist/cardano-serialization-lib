@@ -5,7 +5,7 @@ use crate::*;
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Hash)]
-pub struct BigInt(pub(crate) num_bigint::BigInt);
+pub struct BigInt(pub num_bigint::BigInt);
 
 impl_to_from!(BigInt);
 
